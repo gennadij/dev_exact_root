@@ -47,13 +47,18 @@ pub fn berechne_exacte_wurzel(radikand : u64) -> String {
   let radikand_wurzelwert_2 = zippen(standard_werte_2, einfache_reihe_2);
   let komplexe_wurzelwert = berechne_komplexe_wurzelwert(radikand, radikand_wurzelwert_2);
   //println!("Komplexe Wurzelwert {:?}", komplexe_wurzelwert);
-  let multiplikator = komplexe_wurzelwert.unwrap().0.to_string();
-  let wurzelwert = komplexe_wurzelwert.unwrap().1.to_string();
-  match einfache_wurzelwert {
-    Some(res) => res.to_string(),
-    None => multiplikator + "*sqrt(" + &wurzelwert + ")"
+  match (einfache_wurzelwert, komplexe_wurzelwert) {
+    (Some(einfach), Some(_)) => einfach.to_string(),
+    (Some(_), None)          => String::from("unbehandelter Fall"),
+    (None, Some(komplex))          => {
+                                        let multiplikator = komplex.0.to_string();
+                                        let wurzelwert = komplex.1.to_string();
+                                        multiplikator + "*sqrt(" + &wurzelwert + ")"
+                                      },
+    (None, None)                   => {
+                                        String::from("unberehenbar")
+                                      }
   }
-  // unberehenbare Wurzel loesen panic aus
 }
 
 fn berechne_standard_werte(ungerade_zahlen: Vec<u64>) -> Vec<u64> {
