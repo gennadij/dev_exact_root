@@ -32,9 +32,12 @@
      5 = Multiplikator
      sqrt(2) =  unberechneter Radikand
   ------------------------------------------------------------------------------*/
+pub struct Res{
+  pub multiplikator : u64,
+  pub wurzelwert :u64
+}
 
-
-pub fn berechne_exacte_wurzel(radikand : u64) -> String {
+pub fn berechne_exacte_wurzel(radikand : u64) -> Res {
   let ungerade_zahlen_1 = berechne_ungerade_zahlen(radikand);
   let standard_werte_1 = berechne_standard_werte(ungerade_zahlen_1);
   let einfache_reihe_1 = berechne_einfache_reihe(radikand);
@@ -47,11 +50,11 @@ pub fn berechne_exacte_wurzel(radikand : u64) -> String {
   let radikand_wurzelwert_2 = zippen(standard_werte_2, einfache_reihe_2);
   let komplexe_wurzelwert = berechne_komplexe_wurzelwert(radikand, radikand_wurzelwert_2);
   //println!("Komplexe Wurzelwert {:?}", komplexe_wurzelwert);
-  let multiplikator = komplexe_wurzelwert.unwrap().0.to_string();
-  let wurzelwert = komplexe_wurzelwert.unwrap().1.to_string();
+  let multiplikator = komplexe_wurzelwert.unwrap().0;
+  let wurzelwert = komplexe_wurzelwert.unwrap().1;
   match einfache_wurzelwert {
-    Some(res) => res.to_string(),
-    None => multiplikator + "*sqrt(" + &wurzelwert + ")"
+    Some(res) => Res{multiplikator : 1, wurzelwert : res},
+    None => Res{multiplikator : multiplikator, wurzelwert : wurzelwert}
   }
   // unberehenbare Wurzel loesen panic aus
 }
