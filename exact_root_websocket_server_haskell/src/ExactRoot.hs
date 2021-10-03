@@ -3,6 +3,8 @@ module ExactRoot
   berechneWurzel,
   Ergebnis ( .. )
 ) where
+import Data.ByteString.Builder (int16HexFixed)
+import Data.List.NonEmpty (nonEmpty)
 
 {------------------------------------------------------------------------------
 
@@ -74,6 +76,48 @@ berechneWurzel radikand
           multiplikator = ke_multiplikator komplexeWurzelwert
           rad = ke_radikand komplexeWurzelwert
 
+
+berechneExacteWurzel :: Int -> Maybe(Int, Int)
+berechneExacteWurzel radikand = do
+  let ungeradeZahlen    = berechneUngeradeZahlen radikand
+  let einfacheReihe       = berechneEinfacheReihe radikand
+  let standardWerte       = berechneStandardWerte2 ungeradeZahlen
+  let radikandWurzelwerte = zippen einfacheReihe standardWerte
+  let einfacheWurzelwerte = berechneEinfacheWurzelwert' radikand radikandWurzelwerte
+  let komplexeWurzelwerte = berechneKomplexeWurzelwert' radikand radikandWurzelwerte
+  Just(1,1)
+
+berechneUngeradeZahlen :: Int -> [Int]
+berechneUngeradeZahlen radikand = filter odd [1 .. radikand]
+
+berechneEinfacheReihe :: Int -> [Int]
+berechneEinfacheReihe radikand = [2 .. ((radikand `quot` 2) +1)]
+
+berechneStandardWerte2 :: [Int] -> [Int]
+berechneStandardWerte2 [] = []
+berechneStandardWerte2 [x] = []
+berechneStandardWerte2 (x:y:xs) = x + y : berechneStandardWerte2(x + y :xs)
+
+zippen :: [Int] -> [Int] -> [(Int, Int)]
+zippen = zip
+
+berechneEinfacheWurzelwert' :: Int -> [(Int, Int)] -> Maybe Int
+berechneEinfacheWurzelwert' radikand radikandWurzelwert = vergleiche (filter (\(r, w) -> w == radikand) radikandWurzelwert)
+  where
+    vergleiche :: [(Int, Int)] -> Maybe Int
+    vergleiche [(r,_)] = Just r
+    vergleiche ((_,_):y) = Nothing 
+    vergleiche []  = Nothing
+
+berechneKomplexeWurzelwert' :: Int -> [(Int, Int)] -> Maybe (Int, Int)
+berechneKomplexeWurzelwert' radikand radikandWurzelwert = vergleiche (filter(\(r, w) -> (radikand `mod` w) == 0) radikandWurzelwert)
+  where 
+    vergleiche :: [(Int, Int)] -> Maybe(Int, Int)
+    vergleiche [] = Nothing 
+    vergleiche [(r, w)] = Just (r, radikand `quot` w)
+    vergleiche ((r, w) : y) = Just(r, radikand `quot` w)
+
+
 berechneStandardwerte :: Int -> StandardWerte
 berechneStandardwerte radikand =
   StandardWerte
@@ -89,7 +133,6 @@ berechneStandardwerte radikand =
       | otherwise         = []
       where
         summe = x + y
-
 
 berechneEinfacheWurzelwert :: Int -> StandardWerte -> EinfacheErgebnis
 berechneEinfacheWurzelwert radikand_ standardWerte
