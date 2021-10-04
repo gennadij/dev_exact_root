@@ -1,20 +1,27 @@
 module ExactRoot2
 (
-  berechneExacteWurzel
+  berechneExacteWurzel,
+  Res( .. )
 ) where
 
-berechneExacteWurzel :: Int -> Maybe(Int, Int)
+data Res = Res {
+  multiplikator :: Int,
+  wurzelwert :: Int
+} deriving (Eq, Show)
+
+berechneExacteWurzel :: Int -> Res
 berechneExacteWurzel radikand = do
-  let ungeradeZahlen    = berechneUngeradeZahlen radikand
+  let ungeradeZahlen      = berechneUngeradeZahlen radikand
   let einfacheReihe       = berechneEinfacheReihe radikand
   let standardWerte       = berechneStandardWerte2 ungeradeZahlen
   let radikandWurzelwerte = zippen einfacheReihe standardWerte
   let einfacheWurzelwerte = berechneEinfacheWurzelwert' radikand radikandWurzelwerte
   let komplexeWurzelwerte = berechneKomplexeWurzelwert' radikand radikandWurzelwerte
   case einfacheWurzelwerte of
-    Just r        -> Just(1, r)
-    Nothing       -> komplexeWurzelwerte
-    -- unberecenbare Radikand loest Nothig aus
+    Just w  -> Res 1 w
+    Nothing -> case komplexeWurzelwerte of 
+        Just (m, w)  -> Res m w
+        Nothing   -> Res 1 radikand
 
 berechneUngeradeZahlen :: Int -> [Int]
 berechneUngeradeZahlen radikand = filter odd [1 .. radikand]
@@ -50,4 +57,3 @@ berechneKomplexeWurzelwert' radikand radikandWurzelwert = auspacken sucheKomplex
     sucheKomplexeWurzelwert :: [(Int, Int)]
     sucheKomplexeWurzelwert = filter(\(r, w) -> (radikand `mod` w) == 0) radikandWurzelwert
 
-    

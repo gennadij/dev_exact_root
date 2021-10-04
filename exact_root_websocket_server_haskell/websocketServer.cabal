@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3183c95c4463a4dbd0c3db2ab20ccf3ba6fe8151eaf8ee3763ab9b748e8f1998
+-- hash: faa088bfa048ce9238ca29c9cd17f26d56730c46d2fb35c2446a99744997089e
 
 name:           websocketServer
 version:        0.1.0.0
@@ -28,6 +28,7 @@ source-repository head
 library
   exposed-modules:
       ExactRoot
+      ExactRoot2
       QuadEquation
   other-modules:
       Paths_websocketServer
