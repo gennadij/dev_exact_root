@@ -38,5 +38,6 @@ Beispiel sqrt(50)
 
 # JSON Format
 
-Client request {"jsonrpc":"2.0","method":"exact_root","params":{"radikand":50},"id":1}
-Server respons {"jsonrpc":"2.0","result":{"multiplikator":5,"wurzelwert":2},"id":1}
+Client request `{"jsonrpc":"2.0","method":"exact_root","params":{"radikand":50},"id":1}`
+
+Server respons `{"jsonrpc":"2.0","result":{"multiplikator":5,"wurzelwert":2},"id":1}`

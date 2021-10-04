@@ -24,7 +24,7 @@ pub mod calc_exact_root {
     }
     // unberehenbare Wurzel loesen panic aus
   }
-
+  //die Berechnung bis Resultat der Addition < Radikand
   fn berechne_standard_werte(ungerade_zahlen: Vec<u64>) -> Vec<u64> {
     let mut counter = 0;
     let mut result : Vec<u64> = Vec::new();
@@ -44,10 +44,15 @@ pub mod calc_exact_root {
 
   use std::vec::Vec;
   fn berechne_ungerade_zahlen(radikand: u64) -> Vec<u64>{
-    (0..radikand).collect::<Vec<u64>>()
+    if radikand < 1 {
+      vec![1]
+    }else {
+      (0..radikand).collect::<Vec<u64>>()
       .into_iter()
       .filter(|x| x % 2 != 0)
       .collect::<Vec<u64>>()
+    }
+    
   } 
 
   fn berechne_einfache_reihe(radikand: u64) -> Vec<u64> {
