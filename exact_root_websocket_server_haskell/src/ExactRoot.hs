@@ -6,40 +6,6 @@ module ExactRoot
 import Data.ByteString.Builder (int16HexFixed)
 import Data.List.NonEmpty (nonEmpty)
 
-{------------------------------------------------------------------------------
-
-Exacte Berechnung der Wurzel
-Die Berechnung beruht auf das Prenzip der Summe ungeraden Reihen.
-
-Beispiel sqrt(50)
-1 + 3 = [4]
-4 + 5 = [4,9]
-9 + 7 = [4,9,16]
-16 + 9 = [4,9,16,25]
-25 + 11 = [4,9,16,25,36]
-36 + 13 = [4,9,16,25,36,49]
-
-1. Berschne ungerade Reihe bis 50
-2. Berechne in der ungerade Reihe die summe der ersten zwei Elemente und hänge
-   diese an der neue Reihe (siehe oben). 
-3. Parallel zu der o.g. Reihe wird zu jedem Wert einen Wert aus der einfache 
-   Reihe angehaengt z.B. [(2,4),(3,9),(4,16)]. In weiteren Beschreibung wird 
-   diese Reihe als Wurzelwert_Radikand genannt.
-   Funktion : berechneStandardwerte Int -> StandardWerte
-4. Berechne einfache Wurzelwert z.B. sqrt(25) = 5
-   Dazu wird einfach in der Reihe Wurzelwert_Radikand der zweite Wert 
-   (Radikand) verglichen und der erste Wert (Wurzelwert) als Ergebnis
-   ausgegeben
-   Funktion : berechneEinfacheWurzelwert
-5. Berechnung des komplexen Wurzelwertes z.B. sqrt(50) = 5 * sqrt(2)
-   Bei der komplexen Berechnung wird Iterativ versucht jeden Radikand aus der 
-   Reihe Wurzelwert_Radikand mit Hilfe der quotRem funktion zu teilen.
-   Wenn einen Teiler ohne Rest gefunden wird wird der Ergebnis zu dem
-   unberechnetem Radikand unter Wurzel und der Wurzelwert aus der Reihe 
-   Werzelwert_Radikand zu dem Multiplikator. 
-   5 = Multiplikator
-   sqrt(2) =  unberechneter Radikand
-------------------------------------------------------------------------------}
 data Ergebnis = Ergebnis {
   wurzelWert :: Int,
   multiplikator :: Int,
@@ -75,48 +41,6 @@ berechneWurzel radikand
           einfacheWurzelwert = ee_wurzelWert einfacheErgebnis
           multiplikator = ke_multiplikator komplexeWurzelwert
           rad = ke_radikand komplexeWurzelwert
-
-
-berechneExacteWurzel :: Int -> Maybe(Int, Int)
-berechneExacteWurzel radikand = do
-  let ungeradeZahlen    = berechneUngeradeZahlen radikand
-  let einfacheReihe       = berechneEinfacheReihe radikand
-  let standardWerte       = berechneStandardWerte2 ungeradeZahlen
-  let radikandWurzelwerte = zippen einfacheReihe standardWerte
-  let einfacheWurzelwerte = berechneEinfacheWurzelwert' radikand radikandWurzelwerte
-  let komplexeWurzelwerte = berechneKomplexeWurzelwert' radikand radikandWurzelwerte
-  Just(1,1)
-
-berechneUngeradeZahlen :: Int -> [Int]
-berechneUngeradeZahlen radikand = filter odd [1 .. radikand]
-
-berechneEinfacheReihe :: Int -> [Int]
-berechneEinfacheReihe radikand = [2 .. ((radikand `quot` 2) +1)]
-
-berechneStandardWerte2 :: [Int] -> [Int]
-berechneStandardWerte2 [] = []
-berechneStandardWerte2 [x] = []
-berechneStandardWerte2 (x:y:xs) = x + y : berechneStandardWerte2(x + y :xs)
-
-zippen :: [Int] -> [Int] -> [(Int, Int)]
-zippen = zip
-
-berechneEinfacheWurzelwert' :: Int -> [(Int, Int)] -> Maybe Int
-berechneEinfacheWurzelwert' radikand radikandWurzelwert = vergleiche (filter (\(r, w) -> w == radikand) radikandWurzelwert)
-  where
-    vergleiche :: [(Int, Int)] -> Maybe Int
-    vergleiche [(r,_)] = Just r
-    vergleiche ((_,_):y) = Nothing 
-    vergleiche []  = Nothing
-
-berechneKomplexeWurzelwert' :: Int -> [(Int, Int)] -> Maybe (Int, Int)
-berechneKomplexeWurzelwert' radikand radikandWurzelwert = vergleiche (filter(\(r, w) -> (radikand `mod` w) == 0) radikandWurzelwert)
-  where 
-    vergleiche :: [(Int, Int)] -> Maybe(Int, Int)
-    vergleiche [] = Nothing 
-    vergleiche [(r, w)] = Just (r, radikand `quot` w)
-    vergleiche ((r, w) : y) = Just(r, radikand `quot` w)
-
 
 berechneStandardwerte :: Int -> StandardWerte
 berechneStandardwerte radikand =

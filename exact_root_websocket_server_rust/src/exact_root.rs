@@ -1,37 +1,3 @@
-/*------------------------------------------------------------------------------
-
-  Exacte Berechnung der Wurzel
-  Die Berechnung beruht auf das Prenzip der Summe ungeraden Reihen.
-  
-  Beispiel sqrt(50)
-  1 + 3 = [4]
-  4 + 5 = [4,9]
-  9 + 7 = [4,9,16]
-  16 + 9 = [4,9,16,25]
-  25 + 11 = [4,9,16,25,36]
-  36 + 13 = [4,9,16,25,36,49]
-  
-  1. Berechne ungerade Reihe bis 50
-  2. Berechne in der ungerade Reihe die summe der ersten zwei Elemente und hänge
-     diese an der neue Reihe (siehe oben). 
-  3. Parallel zu der o.g. Reihe wird zu jedem Wert einen Wert aus der einfache 
-     Reihe angehaengt z.B. [(2,4),(3,9),(4,16)]. In weiteren Beschreibung wird 
-     diese Reihe als Wurzelwert_Radikand genannt.
-     Funktion : berechneStandardwerte Int -> StandardWerte
-  4. Berechne einfache Wurzelwert z.B. sqrt(25) = 5
-     Dazu wird einfach in der Reihe Wurzelwert_Radikand der zweite Wert 
-     (Radikand) verglichen und der erste Wert (Wurzelwert) als Ergebnis
-     ausgegeben
-     Funktion : berechneEinfacheWurzelwert
-  5. Berechnung des komplexen Wurzelwertes z.B. sqrt(50) = 5 * sqrt(2)
-     Bei der komplexen Berechnung wird iterativ versucht jeden Radikand aus der 
-     Reihe Radikand_Wurzelwert mit Hilfe der quotRem funktion zu teilen.
-     Wenn einen Teiler ohne Rest gefunden wird wird der Ergebnis zu dem
-     unberechnetem Radikand unter Wurzel und der Wurzelwert aus der Reihe 
-     Werzelwert_Radikand zu dem Multiplikator. 
-     5 = Multiplikator
-     sqrt(2) =  unberechneter Radikand
-  ------------------------------------------------------------------------------*/
 pub mod calc_exact_root {
   pub struct Res{
     pub multiplikator : u64,
@@ -44,13 +10,12 @@ pub mod calc_exact_root {
     let einfache_reihe_1 = berechne_einfache_reihe(radikand);
     let radikand_wurzelwert_1 = zippen(standard_werte_1, einfache_reihe_1);
     let einfache_wurzelwert = berechne_einfache_wurzelwert(radikand, radikand_wurzelwert_1);
-    //println!("Einfache Wurzelwert {:?}", einfache_wurzelwert);
+    
     let ungerade_zahlen_2 = berechne_ungerade_zahlen(radikand);
     let standard_werte_2 = berechne_standard_werte(ungerade_zahlen_2);
     let einfache_reihe_2 = berechne_einfache_reihe(radikand);
     let radikand_wurzelwert_2 = zippen(standard_werte_2, einfache_reihe_2);
     let komplexe_wurzelwert = berechne_komplexe_wurzelwert(radikand, radikand_wurzelwert_2);
-    //println!("Komplexe Wurzelwert {:?}", komplexe_wurzelwert);
     let multiplikator = komplexe_wurzelwert.unwrap().0;
     let wurzelwert = komplexe_wurzelwert.unwrap().1;
     match einfache_wurzelwert {
@@ -110,10 +75,8 @@ pub mod calc_exact_root {
       
   fn berechne_komplexe_wurzelwert(radikand: u64, radikand_wurzelwert: Vec<(u64, u64)>) -> Option<(u64, u64)> {
     let mut result: Option<(u64, u64)> = None;
-    // println!("radikand_wurzelwert {:?}", radikand_wurzelwert);
     for (x, y) in radikand_wurzelwert.iter() {
       let temp = radikand % y;
-      // println!("temp = radikand % y; {} {} {}", temp, radikand, y);
       if temp == 0 {
         result = Some((*x, (radikand / y)));
         break;
