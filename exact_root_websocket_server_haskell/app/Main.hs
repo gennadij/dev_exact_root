@@ -92,6 +92,9 @@ isNummeric xs = all isDigit xs
 -- execExactRootString :: Int -> String
 -- execExactRootString = calcExactRootString
 
+-- {"jsonrpc":"2.0","method":"exact_root","params":{"radikand":50},"id":1}
+-- {"jsonrpc":"2.0","result":{"multiplikator":5,"wurzelwert":2},"id":1}
+
 convertToJsonResponse :: Int -> LB.ByteString
 convertToJsonResponse radicand = encode (
   ResponseJson {
