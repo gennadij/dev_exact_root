@@ -1,5 +1,5 @@
 module QuadEquation () where
-import qualified ExactRoot as ER (berechneWurzel, Ergebnis ( .. ))
+-- import qualified ExactRoot as ER (berechneWurzel, Ergebnis ( .. ))
 
 data Form = F {
   f_a :: Int,
