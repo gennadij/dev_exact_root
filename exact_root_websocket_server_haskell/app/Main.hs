@@ -124,21 +124,22 @@ application clients pending = do
 talk :: WS.Connection -> MVar Clients -> IO ()
 talk conn clients = forever $ do
   msg <- WS.receiveData conn
-  let response = Response {
-    response_jsonrpc = "2.0",
-    response_result = Result' 1 2 3, 
-    response_id = 1
-  }
-  print (show (encode response))
+  -- print (show (encode response))
   print msg
-  handleMsg (decodeJson msg) conn
+  handleMsg' (decodeJson' msg) conn
 
 convertTextToInt :: Text -> Int
 convertTextToInt st = read (T.unpack st) :: Int
 
 handleMsg :: Maybe RequestJson -> WS.Connection -> IO ()
 handleMsg jObject conn = case jObject of
-  Just obj | isExactRoot $ requestAction obj -> WS.sendTextData conn (convertToJsonResponse (radicand (requestData obj)))
+  Just obj | isExactRoot $ requestAction obj -> WS.sendTextData conn (convertToJsonResponse' (radicand (requestData obj)))
+           | otherwise -> WS.sendTextData conn ("Unbekannt" :: Text)
+  Nothing -> WS.sendTextData conn ("Unbekante Anfrage" :: Text)
+
+handleMsg' :: Maybe Request -> WS.Connection -> IO ()
+handleMsg' jObject conn = case jObject of
+  Just obj | isExactRoot $ request_method obj -> WS.sendTextData conn (convertToJsonResponse' (params_radikand (request_params obj)))
            | otherwise -> WS.sendTextData conn ("Unbekannte Anfrage" :: Text)
   Nothing -> WS.sendTextData conn ("Unbekante Anfrage" :: Text)
 
@@ -167,19 +168,47 @@ convertToJsonResponse radicand = encode (
     sqrt = getSqrt exactRoot
     exactRoot = execExactRoot radicand
 
+convertToJsonResponse' :: Int -> LB.ByteString
+convertToJsonResponse' radicand = encode (
+  Response {
+    response_jsonrpc = "2.0",
+    response_result = Result' multiplier wurzelwert radikand, 
+    response_id = 1
+  })
+  where 
+    multiplier = getMuliplier' exactRoot
+    wurzelwert = getSqrt' exactRoot
+    radikand = getRadikand exactRoot
+    exactRoot = execExactRoot' radicand
+
 
 isExactRoot :: String -> Bool
-isExactRoot action =
-  action == "exactRoot"
+isExactRoot method =
+  method == "exact_root"
 
 decodeJson :: Text -> Maybe RequestJson
 decodeJson msg = decode (WS.toLazyByteString msg) :: Maybe RequestJson
 
+decodeJson' :: Text -> Maybe Request
+decodeJson' msg = decode (WS.toLazyByteString msg) :: Maybe Request
+
 execExactRoot :: Int -> ER.Ergebnis
 execExactRoot = ER.berechneWurzel
+
+execExactRoot' :: Int -> ER2.Res
+execExactRoot' = ER2.berechneExacteWurzel
 
 getMuliplier :: ER.Ergebnis -> String
 getMuliplier e = show (ER.multiplikator e)
 
+getMuliplier' :: ER2.Res -> Int
+getMuliplier' = ER2.multiplikator 
+
 getSqrt :: ER.Ergebnis -> String
-getSqrt e = show (ER.wurzelWert e) 
+getSqrt e = show (ER.wurzelWert e)
+
+getSqrt' :: ER2.Res -> Int
+getSqrt' = ER2.wurzelwert
+
+getRadikand :: ER2.Res -> Int
+getRadikand = ER2.radikand
