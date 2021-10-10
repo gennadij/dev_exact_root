@@ -1,5 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Main where
+module Websocket
+(
+  runWebsocketServer
+) where
+
 import Data.Text (Text)
 import Control.Monad (forM_, forever, mzero)
 import Control.Concurrent (MVar, newMVar, modifyMVar_, modifyMVar, readMVar)
@@ -74,9 +78,10 @@ instance ToJSON Result' where
            , "wurzelwert" .= result_wurzelwert
            , "radikand" .= result_radikand
     ]
-main :: IO ()
-main = do
---    state <- newMVar newServerState
+
+runWebsocketServer :: IO ()
+runWebsocketServer = do
+    --    state <- newMVar newServerState
     T.putStrLn "Server started."
     
     clients <- newMVar newClients
@@ -137,4 +142,4 @@ getSqrt :: ER.Res -> Int
 getSqrt = ER.wurzelwert
 
 getRadikand :: ER.Res -> Int
-getRadikand = ER.radikand
+getRadikand = ER.radikand 
