@@ -41,3 +41,17 @@ Beispiel sqrt(50)
 Client request `{"jsonrpc":"2.0","method":"exact_root","params":{"radikand":50},"id":1}`
 
 Server respons `{"jsonrpc":"2.0","result":{"multiplikator":5,"wurzelwert":2},"id":1}`
+
+# TODOs
+- Es können mehrer Ergebnisse werden. Z.B sqrt(300) = 2xsqrt(75), 10xsqrt(3)
+Daraus folgt dass die Liste auf alle Ergebnisse geprüft werden soll.
+
+## Haskell
+`$ stack setup`
+`$ stack build`
+`$ stack exec exact-root-ws-haskell-exe`
+Kopiert die exe zu ~/.lokal/bin
+`$ stack install`
+## Rust
+`$ cargo build`
+`$ cargo run`

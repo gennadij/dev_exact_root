@@ -7,14 +7,32 @@
   <link href="css/style.css" type="text/css" rel="stylesheet">
   <!-- JS -->
   <script src="js/websocket.js"></script>
+  <script src="js/websocketRust.js"></script>
+  <script src="js/websocketHaskell.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 </head>
 
 <body>
   <div>Client für die Berechnung der quadratischen Würzel</div>
+  <div>Die Logik der Berechnung wurde in folgenden Sprachen implementiert.</div>
+  <ul>
+    <li>Haskel</li>
+    <li>Rust</li>
+  </ul>
+  <hr>
+  <label>Status des Websockets in Haskell: </label>
+  <label id="serverStatusHaskell"></label>
   <br><br>
-  <label>Status des Wbsockets : </label>
-  <label id="serverStatus">Status des Websockets : </label>
+  <dev>Berechnung mit Haskell</dev>
+  <br><br>
+  <label for="fname__">Geben Sie eine Zahl</label>
+  <input type="number__" id="radicand">
+  <button id="senden__">Senden</button>
+  <hr>
+  <label>Status des Websockets in Rust: </label>
+  <label id="serverStatusRust"></label>
+  <br><br>
+  <dev>Berechnung mit Rust</dev>
   <br><br>
   <label for="fname">Geben Sie eine Zahl</label>
   <input type="number" id="radicand">
