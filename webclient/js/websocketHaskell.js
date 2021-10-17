@@ -5,7 +5,7 @@ function websocketHaskell(){
     var wsUrl = "ws://" + httpHostname + ":" + httpPort + "/" + param;
     console.log("Connected to " + wsUrl);
     // ws =  new WebSocket("ws://localhost:9160/");
-    ws = new WebSocket("ws://localhost:8000/ws");
+    ws = new WebSocket("ws://localhost:9160");
     $("#resultHaskell").html("Ergebniss von Haskell: ")
     createWebsocket(ws);
     $("#sendenHaskell").on("click", function(e){
@@ -24,22 +24,36 @@ function websocketHaskell(){
     ws.onopen = function() {
       $('#serverStatusHaskell').text('open');
     }
-    //rust response
-    // {"jsonrpc":"2.0","result":{"multiplikator":1,"wurzelwert":5},"id":1}
+    // {"result":{"multiplikator":-1,"wurzelwert":5,"radikand":-1},"jsonrpc":"2.0","id":1}
     ws.onmessage = function (evt) {
       console.log("Server sendet : " + evt.data)
-      var received_msg = JSON.parse(evt.data);
-      console.log("Received Message: " + evt.data);
-      var root = received_msg.result.wurzelwert;
-      var multiplier = received_msg.result.multiplikator;
-      var radicand = received_msg.result.radikand;
-      $("#resultHaskell").html(
-        "Ergebnis: " +  
-        multiplier + 
-        "&times;&radic;<span style=\"text-decoration: overline\">" + 
-        root + 
-        "</span>"
-      )
+      var received_msg = JSON.parse(evt.data)
+      console.log("Received Message: " + evt.data)
+      var multiplikator = received_msg.result.multiplikator
+      var wurzelwert = received_msg.result.wurzelwert
+      var radikand = received_msg.result.radikand
+      if(multiplikator == -1 && radikand == -1){
+        // {"result":{"multiplikator":-1,"wurzelwert":-1,"radikand":21},"jsonrpc":"2.0","id":1}
+        $("#resultHaskell").html(
+          "Ergebnis: " + wurzelwert + "</span>"
+        )
+      }else if(multiplikator == -1 && wurzelwert == -1){
+        // {"result":{"multiplikator":-1,"wurzelwert":-1,"radikand":21},"jsonrpc":"2.0","id":1}
+        $("#resultHaskell").html(
+          "Ergebnis: " + "&radic;<span style=\"text-decoration: overline\">" + 
+          radikand + 
+          "</span>"
+        )
+      }else{
+        // {"result":{"multiplikator":5,"wurzelwert":2,"radikand":-1},"jsonrpc":"2.0","id":1}
+        $("#resultHaskell").html(
+          "Ergebnis: " +  
+          multiplikator + 
+          "&times;&radic;<span style=\"text-decoration: overline\">" + 
+          wurzelwert + 
+          "</span>"
+        )
+      }
     }
   
     ws.onclose = function() {

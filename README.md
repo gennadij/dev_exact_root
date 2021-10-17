@@ -38,10 +38,10 @@ Beispiel sqrt(50)
 
 # JSON Format
 
-Client request `{"jsonrpc":"2.0","method":"exact_root","params":{"radikand":50},"id":1}`
+Client request für Rust und Haskell: `{"jsonrpc":"2.0","method":"exact_root","params":{"radikand":50},"id":1}`
 
-Server respons `{"jsonrpc":"2.0","result":{"multiplikator":5,"wurzelwert":2},"id":1}`
-
+Server response Rust: `{"jsonrpc":"2.0","result":{"multiplikator":5,"wurzelwert":2},"id":1}`
+Server response Haskell: `{"result":{"multiplikator":-1,"wurzelwert":5,"radikand":-1},"jsonrpc":"2.0","id":1}`
 # TODOs
 - Es können mehrer Ergebnisse werden. Z.B sqrt(300) = 2xsqrt(75), 10xsqrt(3)
 Daraus folgt dass die Liste auf alle Ergebnisse geprüft werden soll.
