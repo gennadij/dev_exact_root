@@ -2,15 +2,16 @@ function websocketRust(){
   const httpPort = location.port;
   const httpHostname = location.hostname;
   const param = location.pathname;
-  var wsUrl = "ws://" + httpHostname + ":" + httpPort + "/" + param;
+  const wsUrl = "ws://localhost:8000/ws"
+  //var wsUrl = "ws://" + httpHostname + ":" + httpPort + "/" + param;
   console.log("Connected to " + wsUrl);
   // ws =  new WebSocket("ws://localhost:9160/");
-  ws = new WebSocket("ws://localhost:8000/ws");
+  var wsRust = new WebSocket(wsUrl);
   $("#result").html("Ergebniss: ")
-  createWebsocket(ws);
-  $("#senden").on("click", function(e){
+  createWebsocketRust(wsRust);
+  $("#sendenRust").on("click", function(e){
     var rad = $("#radicand").val()
-    ws.send(JSON.stringify(
+    wsRust.send(JSON.stringify(
       {
         jsonrpc: "2.0", 
         method: "exact_root", 
@@ -20,9 +21,11 @@ function websocketRust(){
   })
 }
 
-function createWebsocket(ws) {
+function createWebsocketRust(ws) {
   ws.onopen = function() {
-    $('#serverStatusRust').text('open');
+    console.log("Websocket on OPEN")
+    console.log("ws " + ws.url)
+    $('#serverStatusRust').text('open')
   }
   //rust response
   // {"jsonrpc":"2.0","result":{"multiplikator":1,"wurzelwert":5},"id":1}

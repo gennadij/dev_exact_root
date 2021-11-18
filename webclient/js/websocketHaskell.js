@@ -2,15 +2,15 @@ function websocketHaskell(){
     const httpPort = location.port;
     const httpHostname = location.hostname;
     const param = location.pathname;
-    var wsUrl = "ws://" + httpHostname + ":" + httpPort + "/" + param;
+    // var wsUrl = "ws://" + httpHostname + ":" + httpPort + "/" + param;
+    var wsUrl = "ws://localhost:9160"
     console.log("Connected to " + wsUrl);
-    // ws =  new WebSocket("ws://localhost:9160/");
-    ws = new WebSocket("ws://localhost:9160");
+    var wsHaskell = new WebSocket(wsUrl);
     $("#resultHaskell").html("Ergebniss von Haskell: ")
-    createWebsocket(ws);
+    createWebsocketHaskell(wsHaskell);
     $("#sendenHaskell").on("click", function(e){
       var rad = $("#radicandHaskell").val()
-      ws.send(JSON.stringify(
+      wsHaskell.send(JSON.stringify(
         {
           jsonrpc: "2.0", 
           method: "exact_root", 
@@ -20,8 +20,10 @@ function websocketHaskell(){
     })
   }
   
-  function createWebsocket(ws) {
+  function createWebsocketHaskell(ws) {
     ws.onopen = function() {
+      console.log("Websocket on OPEN")
+      console.log("ws " + ws.url)
       $('#serverStatusHaskell').text('open');
     }
     // {"result":{"multiplikator":-1,"wurzelwert":5,"radikand":-1},"jsonrpc":"2.0","id":1}
