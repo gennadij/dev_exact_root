@@ -59,3 +59,12 @@ berechneKomplexeWurzelwert radikand radikandWurzelwert = auspacken sucheKomplexe
     sucheKomplexeWurzelwert :: [(Int, Int)]
     sucheKomplexeWurzelwert = filter(\(r, w) -> (radikand `mod` w) == 0) radikandWurzelwert
 
+berechneKomplexeWurzelwert' :: Int -> [(Int, Int)] -> [Maybe (Int, Int)]
+berechneKomplexeWurzelwert' radikand radikandWurzelwert = auspacken sucheKomplexeWurzelwert
+  where
+    auspacken :: [(Int, Int)] -> [Maybe(Int, Int)]
+    auspacken [] = [Nothing]
+    auspacken [(r, w)] = [Just (r, radikand `quot` w)]
+    auspacken ((r, w) : y) = Just(r, radikand `quot` w): auspacken y
+    sucheKomplexeWurzelwert :: [(Int, Int)]
+    sucheKomplexeWurzelwert = filter(\(r, w) -> (radikand `mod` w) == 0) radikandWurzelwert

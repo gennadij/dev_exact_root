@@ -55,3 +55,8 @@ Kopiert die exe zu ~/.lokal/bin
 ## Rust
 `$ cargo build`
 `$ cargo run`
+## Qt C++
+
+## Quellen
+
+https://github.com/facundofarias/awesome-websockets#c-1
