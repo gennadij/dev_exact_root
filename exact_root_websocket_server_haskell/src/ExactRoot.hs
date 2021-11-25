@@ -32,9 +32,10 @@ berechneEinfacheReihe radikand = [2 .. ((radikand `quot` 2) +1)]
 
 -- die Berechnung bis Resultat der Addition < Radikand 
 berechneStandardWerte :: [Int] -> [Int]
-berechneStandardWerte [] = []
-berechneStandardWerte [x] = []
-berechneStandardWerte (x:y:xs) = x + y : berechneStandardWerte(x + y :xs)
+berechneStandardWerte  [] = []
+berechneStandardWerte  [x] = []
+berechneStandardWerte  (x:y:xs) = sum : berechneStandardWerte (sum : xs)
+  where sum = x + y
 
 zippen :: [Int] -> [Int] -> [(Int, Int)]
 zippen = zip
@@ -59,12 +60,12 @@ berechneKomplexeWurzelwert radikand radikandWurzelwert = auspacken sucheKomplexe
     sucheKomplexeWurzelwert :: [(Int, Int)]
     sucheKomplexeWurzelwert = filter(\(r, w) -> (radikand `mod` w) == 0) radikandWurzelwert
 
-berechneKomplexeWurzelwert' :: Int -> [(Int, Int)] -> [Maybe (Int, Int)]
-berechneKomplexeWurzelwert' radikand radikandWurzelwert = auspacken sucheKomplexeWurzelwert
+berechneKomplexeWurzelwert' :: Int -> [(Int, Int)] -> Maybe [(Int, Int)]
+berechneKomplexeWurzelwert' radikand radikandWurzelwert = Just (auspacken sucheKomplexeWurzelwert)
   where
-    auspacken :: [(Int, Int)] -> [Maybe(Int, Int)]
-    auspacken [] = [Nothing]
-    auspacken [(r, w)] = [Just (r, radikand `quot` w)]
-    auspacken ((r, w) : y) = Just(r, radikand `quot` w): auspacken y
+    auspacken :: [(Int, Int)] -> [(Int, Int)]
+    auspacken [] = []
+    auspacken [(r, w)] = [(r, radikand `quot` w)]
+    auspacken ((r, w) : y) = (r, radikand `quot` w): auspacken y
     sucheKomplexeWurzelwert :: [(Int, Int)]
     sucheKomplexeWurzelwert = filter(\(r, w) -> (radikand `mod` w) == 0) radikandWurzelwert
