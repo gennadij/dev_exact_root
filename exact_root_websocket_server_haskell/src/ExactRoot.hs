@@ -3,6 +3,8 @@ module ExactRoot
   berechneExacteWurzel,
   Res( .. )
 ) where
+--import Data.ByteString (partition)
+import Data.List
 
 data Res = Res {
   multiplikator :: Int,
@@ -14,10 +16,11 @@ berechneExacteWurzel :: Int -> Res
 berechneExacteWurzel radikand = do
   let ungeradeZahlen      = berechneUngeradeZahlen radikand
   let einfacheReihe       = berechneEinfacheReihe radikand
-  let standardWerte       = berechneStandardWerte ungeradeZahlen
+  let standardWerte       = reduziereStandardWerte radikand (berechneStandardWerte ungeradeZahlen)
   let radikandWurzelwerte = zippen einfacheReihe standardWerte
   let einfacheWurzelwerte = berechneEinfacheWurzelwert radikand radikandWurzelwerte
   let komplexeWurzelwerte = berechneKomplexeWurzelwert radikand radikandWurzelwerte
+  let komplexeWurzelwerte' = berechneKomplexeWurzelwert' radikand radikandWurzelwerte
   case einfacheWurzelwerte of
     Just w  -> Res (-1) w (-1)
     Nothing -> case komplexeWurzelwerte of 
@@ -36,6 +39,10 @@ berechneStandardWerte  [] = []
 berechneStandardWerte  [x] = []
 berechneStandardWerte  (x:y:xs) = sum : berechneStandardWerte (sum : xs)
   where sum = x + y
+
+reduziereStandardWerte :: Int -> [Int] -> [Int]
+reduziereStandardWerte radiKand stWerte = fst part ++ [head (snd part)]
+  where part = partition (< radiKand) stWerte 
 
 zippen :: [Int] -> [Int] -> [(Int, Int)]
 zippen = zip
