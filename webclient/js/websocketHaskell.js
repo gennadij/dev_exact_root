@@ -48,12 +48,20 @@ function websocketHaskell(){
         )
       }else{
         // {"result":{"multiplikator":5,"wurzelwert":2,"radikand":-1},"jsonrpc":"2.0","id":1}
-        $("#resultHaskell").html(
-          "Ergebnis: " +  
-          multiplikator + 
+        var erg = ""
+        received_msg.result .forEach(element => {
+          erg += "| " + element.multiplikator + 
           "&times;&radic;<span style=\"text-decoration: overline\">" + 
-          wurzelwert + 
-          "</span>"
+          element.wurzelwert + 
+          "</span>" + " | "
+        });
+        
+        $("#resultHaskell").html(
+          "Ergebnis: " +  erg
+          // multiplikator + 
+          // "&times;&radic;<span style=\"text-decoration: overline\">" + 
+          // wurzelwert + 
+          // "</span>"
         )
       }
     }

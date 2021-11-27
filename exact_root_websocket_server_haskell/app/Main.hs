@@ -27,7 +27,7 @@ addClient conn clients = conn : clients
 
 data Response = Response {
   response_jsonrpc :: String,
-  response_result :: Result',
+  response_result :: [Result'],
   response_id :: Int
 } deriving (Show)
 
@@ -111,14 +111,17 @@ convertToJsonResponse :: Int -> LB.ByteString
 convertToJsonResponse radicand = encode (
   Response {
     response_jsonrpc = "2.0",
-    response_result = Result' multiplier wurzelwert radikand, 
+    -- response_result = Result' multiplier wurzelwert radikand,
+    response_result = mapExactRoot exactRoot, 
     response_id = 1
   })
   where 
-    multiplier = getMuliplier exactRoot
-    wurzelwert = getSqrt exactRoot
-    radikand = getRadikand exactRoot
+    -- multiplier = getMuliplier exactRoot
+    -- wurzelwert = getSqrt exactRoot
+    -- radikand = getRadikand exactRoot
     exactRoot = execExactRoot radicand
+    mapExactRoot :: [ER.Res] -> [Result']
+    mapExactRoot res = map (\(ER.Res m w r) -> Result' m w r) res
 
 isExactRoot :: String -> Bool
 isExactRoot method =
@@ -127,7 +130,7 @@ isExactRoot method =
 decodeJson :: Text -> Maybe Request
 decodeJson msg = decode (WS.toLazyByteString msg) :: Maybe Request
 
-execExactRoot :: Int -> ER.Res
+execExactRoot :: Int -> [ER.Res]
 execExactRoot = ER.berechneExacteWurzel
 
 getMuliplier :: ER.Res -> Int

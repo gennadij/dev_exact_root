@@ -12,7 +12,13 @@ data Res = Res {
   radikand :: Int
 } deriving (Eq, Show)
 
-berechneExacteWurzel :: Int -> Res
+data Res' = Res' {
+  multiplikator' :: Int,
+  wurzelwert' :: Int,
+  radikand' :: Int
+} deriving (Eq, Show)
+
+berechneExacteWurzel :: Int -> [Res]
 berechneExacteWurzel radikand = do
   let ungeradeZahlen      = berechneUngeradeZahlen radikand
   let einfacheReihe       = berechneEinfacheReihe radikand
@@ -21,11 +27,14 @@ berechneExacteWurzel radikand = do
   let einfacheWurzelwerte = berechneEinfacheWurzelwert radikand radikandWurzelwerte
   let komplexeWurzelwerte = berechneKomplexeWurzelwert radikand radikandWurzelwerte
   let komplexeWurzelwerte' = berechneKomplexeWurzelwert' radikand radikandWurzelwerte
-  case einfacheWurzelwerte of
-    Just w  -> Res (-1) w (-1)
-    Nothing -> case komplexeWurzelwerte of 
-        Just (m, w)  -> Res m w (-1)
-        Nothing   -> Res (-1) (-1) radikand
+  -- case einfacheWurzelwerte of
+  --  Just w  -> Res (-1) w (-1)
+  --  Nothing -> case komplexeWurzelwerte of 
+  --      Just (m, w)  -> Res m w (-1)
+  --      Nothing   -> Res (-1) (-1) radikand
+  case einfacheWurzelwerte of 
+    Just w -> [Res (-1) w (-1)]
+    Nothing -> map (\(r,w) -> Res r w (-1)) komplexeWurzelwerte' 
 
 berechneUngeradeZahlen :: Int -> [Int]
 berechneUngeradeZahlen radikand = filter odd [1 .. radikand]
@@ -67,8 +76,8 @@ berechneKomplexeWurzelwert radikand radikandWurzelwert = auspacken sucheKomplexe
     sucheKomplexeWurzelwert :: [(Int, Int)]
     sucheKomplexeWurzelwert = filter(\(r, w) -> (radikand `mod` w) == 0) radikandWurzelwert
 
-berechneKomplexeWurzelwert' :: Int -> [(Int, Int)] -> Maybe [(Int, Int)]
-berechneKomplexeWurzelwert' radikand radikandWurzelwert = Just (auspacken sucheKomplexeWurzelwert)
+berechneKomplexeWurzelwert' :: Int -> [(Int, Int)] -> [(Int, Int)]
+berechneKomplexeWurzelwert' radikand radikandWurzelwert = auspacken sucheKomplexeWurzelwert
   where
     auspacken :: [(Int, Int)] -> [(Int, Int)]
     auspacken [] = []
