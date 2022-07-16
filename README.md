@@ -57,6 +57,15 @@ Kopiert die exe zu ~/.lokal/bin
 `$ cargo run`
 ## Qt C++
 
+## Issues
+
+### Fehlerhaften Eingaben
+- 5000
+- 500
+
+### Fehlerhafte Verhalten
+- -6
+
 ## Quellen
 
 https://github.com/facundofarias/awesome-websockets#c-1

@@ -3,8 +3,8 @@ module ExactRoot
   berechneExacteWurzel,
   Res( .. )
 ) where
---import Data.ByteString (partition)
-import Data.List
+  
+import Data.List ( partition )
 
 data Res = Res {
   multiplikator :: Int,
