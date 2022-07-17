@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 33e4895d3c4cdc27e3523e6da0afb7b83e9c96f34909e177a407d982da76d394
+-- hash: f4d95ee36ea5b51858c3b51971cc3e99c75bec6767981874c2706e54ba5665df
 
 name:           exact-root-ws-haskell
 version:        0.1.0.0
@@ -29,6 +29,7 @@ library
   exposed-modules:
       ExactRoot
       Lib
+      QuadEquation
       Websocket
   other-modules:
       Paths_exact_root_ws_haskell
