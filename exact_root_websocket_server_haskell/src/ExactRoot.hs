@@ -20,6 +20,12 @@ data Res' = Res' {
 
 berechneExacteWurzel :: Int -> [Res]
 berechneExacteWurzel radikand = do
+  if (radikand < 0)
+    then berechneNegativenWurzel
+    else berechenPositivenWurzel radikand
+
+berechenPositivenWurzel :: Int -> [Res]
+berechenPositivenWurzel radikand = do
   let ungeradeZahlen      = berechneUngeradeZahlen radikand
   let einfacheReihe       = berechneEinfacheReihe radikand
   let standardWerte       = reduziereStandardWerte radikand (berechneStandardWerte ungeradeZahlen)
@@ -36,10 +42,13 @@ berechneExacteWurzel radikand = do
     Just w -> [Res (-1) w (-1)]
     Nothing -> map (\(r,w) -> Res r w (-1)) komplexeWurzelwerte' 
 
+berechneNegativenWurzel = [Res]
+berechneNegativenWurzel = [Res (-1) (-1) (-1)]
+
 berechneUngeradeZahlen :: Int -> [Int]
 berechneUngeradeZahlen radikand = filter odd [1 .. radikand]
 
-berechneEinfacheReihe :: Int -> [Int]
+berechneEinfacheReihe :: Int -> [Int]sta
 berechneEinfacheReihe radikand = [2 .. ((radikand `quot` 2) +1)]
 
 -- die Berechnung bis Resultat der Addition < Radikand 

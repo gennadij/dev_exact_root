@@ -11,7 +11,13 @@ data Res = Res {
 } deriving (Eq, Show)
 
 berechneExacteWurzel :: Int -> Res
-berechneExacteWurzel radikand = do
+berechneExacteWurzel radikand = 
+  if(radikand < 0)
+    then berechneNegativenWurzel
+    else berechenPositivenWurzel radikand
+  
+berechenPositivenWurzel :: Int -> Res
+berechenPositivenWurzel radikand = do
   let ungeradeZahlen      = berechneUngeradeZahlen radikand
   let einfacheReihe       = berechneEinfacheReihe radikand
   let standardWerte       = berechneStandardWerte ungeradeZahlen
@@ -23,6 +29,9 @@ berechneExacteWurzel radikand = do
     Nothing -> case komplexeWurzelwerte of 
         Just (m, w)  -> Res m w (-1)
         Nothing   -> Res (-1) (-1) radikand
+
+berechneNegativenWurzel :: Res
+berechneNegativenWurzel = Res (-1) (-1) (-1)
 
 berechneUngeradeZahlen :: Int -> [Int]
 berechneUngeradeZahlen radikand = filter odd [1 .. radikand]
