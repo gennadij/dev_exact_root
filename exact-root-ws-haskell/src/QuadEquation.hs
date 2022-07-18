@@ -1,17 +1,21 @@
 module QuadEquation () where
--- import qualified ExactRoot as ER (berechneWurzel, Ergebnis ( .. ))
+import qualified ExactRoot as ER (berechneWurzel, Res ( .. ))
 
 {--
 ax² + bx + c = 0
 
-       -b +- sqrt(b² - 4ac)
+       -b +- sqrt(D)
 x12 = ----------------------
               2a
 D = b² + 4ac
 
-D == 0
-D < 0
-D > 0
+D == 0 x1
+D < 0 
+D > 0 x1/2
+
+m * sqrt(D)
+sqrt(D)
+
 --}
 
 
@@ -36,8 +40,21 @@ data Deskriminante = D {
   d_multiplikator :: Int
 }
 
+data ExacteZahl = EZ {
+  ez_multiplikator :: Maybe Int, -- immer 1 wenn radikand 
+  ez_wurzelwert :: Maybe Int,
+  ez_radikand :: Maybe Int
+} deriving (Eq, Show)
+
+data NullStellen = NS {
+  zns_x1 :: Maybe ExacteZahl
+  zns_x2 :: Maybe ExacteZahl
+}
+
 berechne :: Form -> Ergebnis
 berechne form = undefined
+
+
 
 berechneDiskriminante_ :: Form -> ErgebnisDiskriminante
 berechneDiskriminante_ f = ED diskriminante nullstellen
@@ -49,10 +66,9 @@ berechneDiskriminante_ f = ED diskriminante nullstellen
 
 pruefeDiskrimente :: Int -> Int
 pruefeDiskrimente d
-  | d < 0 = 1
-  | d > 0 = 1
+  | d < 0 = -1
+  | d > 0 = 
   | otherwise = 1 
-
 
 berechneDiskriminante :: Form -> Int
 berechneDiskriminante f = berechneRadikand
@@ -61,3 +77,19 @@ berechneDiskriminante f = berechneRadikand
           where b = f_b f
                 a = f_a f
                 c = f_c f
+
+berechneWurzelVonDiskriment :: Int -> ER.Res
+berechneWurzelVonDiskriment -> berechneWurzel
+
+{- 
+Wenn wurzelwert > 0 (Just) rechne mit wurzelwert
+Wenn radikand > 0 (Just) rechne mit multiplikator und sleppe radikand mit
+-}
+berechneZweiNullStellen :: Form -> ExacteZahl -> ExacteZahl
+berechneZweiNullStellen f d  = (-1) * b + dMult
+  where a = f_a f
+        b = f_b f
+        c = f_c f
+        dMult = ez_multiplikator d
+        dRadikand = ez_radikand d
+        dWurzelWert = ez_wurzelwert d
