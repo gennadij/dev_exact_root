@@ -1,5 +1,5 @@
 module QuadEquation () where
-import qualified ExactRoot as ER (berechneWurzel, Res ( .. ))
+import qualified ExactRoot as ER (berechneExacteWurzel, Res ( .. ))
 
 {--
 ax² + bx + c = 0
@@ -15,6 +15,10 @@ D > 0 x1/2
 
 m * sqrt(D)
 sqrt(D)
+
+Devidend
+---------
+Devisor
 
 --}
 
@@ -47,7 +51,7 @@ data ExacteZahl = EZ {
 } deriving (Eq, Show)
 
 data NullStellen = NS {
-  zns_x1 :: Maybe ExacteZahl
+  zns_x1 :: Maybe ExacteZahl,
   zns_x2 :: Maybe ExacteZahl
 }
 
@@ -61,13 +65,12 @@ berechneDiskriminante_ f = ED diskriminante nullstellen
   where diskriminante :: Deskriminante 
         diskriminante = undefined 
         nullstellen :: Int
-        nullstellen = 1
-
+        nullstellen = undefined
 
 pruefeDiskrimente :: Int -> Int
 pruefeDiskrimente d
   | d < 0 = -1
-  | d > 0 = 
+  | d > 0 = 0
   | otherwise = 1 
 
 berechneDiskriminante :: Form -> Int
@@ -79,17 +82,39 @@ berechneDiskriminante f = berechneRadikand
                 c = f_c f
 
 berechneWurzelVonDiskriment :: Int -> ER.Res
-berechneWurzelVonDiskriment -> berechneWurzel
+berechneWurzelVonDiskriment = ER.berechneExacteWurzel
 
 {- 
 Wenn wurzelwert > 0 (Just) rechne mit wurzelwert
-Wenn radikand > 0 (Just) rechne mit multiplikator und sleppe radikand mit
+Wenn radikand > 0 (Just) rechne mit multiplikator und schleppe radikand mit
 -}
-berechneZweiNullStellen :: Form -> ExacteZahl -> ExacteZahl
-berechneZweiNullStellen f d  = (-1) * b + dMult
+berechneZweiNullStellen :: Form -> ExacteZahl -> NullStellen
+berechneZweiNullStellen f d 
+  | dMult == (-1) && dRadikand == (-1) = undefined-- Einfache Wurzelberechnung rechne mit dWurzelwert
+  | dRadikand == (-1) = undefined-- rechne mit Multiplikator und Wurzelwert mitschleppen
+  | dMult == (-1) && dWurzelWert == (-1) = undefined-- rechne mit Multiplikator == 1 und schleppe radikand mit  (-1) * b + dMult
+  | otherwise = undefined
   where a = f_a f
         b = f_b f
         c = f_c f
-        dMult = ez_multiplikator d
-        dRadikand = ez_radikand d
-        dWurzelWert = ez_wurzelwert d
+        dMult = case ez_multiplikator d of
+          Just mult -> mult
+          Nothing -> undefined
+        dRadikand = case ez_radikand d of
+          Just radik -> radik
+          Nothing -> undefined 
+        dWurzelWert = case ez_wurzelwert d of
+          Just wurzelW -> wurzelW
+          Nothing -> undefined
+          
+
+berechneDevidendMitWurzelwert :: Int -> Int -> Int
+berechneDevidendMitWurzelwert b wurzelwert = (-1) * b + wurzelwert 
+
+berechneDevisorMitWurzelwert :: Int -> Int
+berechneDevisorMitWurzelwert a = 2 * a
+
+checkIfDevisionSuccessful :: Int -> Int -> Bool
+checkIfDevisionSuccessful devidend devisor 
+  | (devidend `mod` devisor) == 0 = True
+  | otherwise = False 
