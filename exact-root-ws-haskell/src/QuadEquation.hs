@@ -50,10 +50,11 @@ data ExacteZahl = EZ {
   ez_radikand :: Maybe Int
 } deriving (Eq, Show)
 
+-- neue Data fuer Nullstellen, vorerst in zns_x1 Wurzelwert.
 data NullStellen = NS {
   zns_x1 :: Maybe ExacteZahl,
   zns_x2 :: Maybe ExacteZahl
-}
+} deriving Show
 
 berechne :: Form -> Ergebnis
 berechne form = undefined
@@ -87,10 +88,18 @@ berechneWurzelVonDiskriment = ER.berechneExacteWurzel
 {- 
 Wenn wurzelwert > 0 (Just) rechne mit wurzelwert
 Wenn radikand > 0 (Just) rechne mit multiplikator und schleppe radikand mit
+
+Test
+berechneZweiNullStellen (F 1 2 3) (EZ (Just (-1)) (Just 2) (Just (-1)))
 -}
 berechneZweiNullStellen :: Form -> ExacteZahl -> NullStellen
 berechneZweiNullStellen f d 
-  | dMult == (-1) && dRadikand == (-1) = undefined-- Einfache Wurzelberechnung rechne mit dWurzelwert
+  | dMult == (-1) && dRadikand == (-1) = do -- Einfache Wurzelberechnung rechne mit dWurzelwert
+    let devidend = berechneDevidendMitWurzelwertPositiv b dWurzelWert
+    let devisor = berechneDevisorMitWurzelwert a 
+    if checkIfDevisionSuccessful devidend devisor
+      then NS (Just (EZ (Just devidend) (Just (devidend `quot` devisor)) (Just devisor))) Nothing 
+      else NS Nothing Nothing
   | dRadikand == (-1) = undefined-- rechne mit Multiplikator und Wurzelwert mitschleppen
   | dMult == (-1) && dWurzelWert == (-1) = undefined-- rechne mit Multiplikator == 1 und schleppe radikand mit  (-1) * b + dMult
   | otherwise = undefined
@@ -108,8 +117,11 @@ berechneZweiNullStellen f d
           Nothing -> undefined
           
 
-berechneDevidendMitWurzelwert :: Int -> Int -> Int
-berechneDevidendMitWurzelwert b wurzelwert = (-1) * b + wurzelwert 
+berechneDevidendMitWurzelwertPositiv :: Int -> Int -> Int
+berechneDevidendMitWurzelwertPositiv b wurzelwert = (-1) * b + wurzelwert
+
+berechneDevidendMitWurzelwertNegativ :: Int -> Int -> Int
+berechneDevidendMitWurzelwertNegativ b wurzelwert = (-1) * b - wurzelwert
 
 berechneDevisorMitWurzelwert :: Int -> Int
 berechneDevisorMitWurzelwert a = 2 * a
