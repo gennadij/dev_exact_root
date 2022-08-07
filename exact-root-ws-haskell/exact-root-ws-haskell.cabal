@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f4d95ee36ea5b51858c3b51971cc3e99c75bec6767981874c2706e54ba5665df
+-- hash: bce07407d194ede06ff157a10ca5b95b12c10801d704d81e8fb580eb6e2d0f8c
 
 name:           exact-root-ws-haskell
 version:        0.1.0.0
@@ -63,6 +63,7 @@ test-suite exact-root-ws-haskell-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      QuadEquatationSpec
       Paths_exact_root_ws_haskell
   hs-source-dirs:
       test
@@ -72,6 +73,7 @@ test-suite exact-root-ws-haskell-test
     , base >=4.7 && <5
     , bytestring
     , exact-root-ws-haskell
+    , hspec
     , text
     , websockets
   default-language: Haskell2010
