@@ -1,8 +1,15 @@
-module QuadEquation (berechneZweiNullStellen, ExacteZahl(..), Form(..), NullStellen(..) ) where
+module QuadEquation (
+  berechneZweiNullStellen
+  , berechneEineNullStelle
+  , berechneDiskriminante
+  , ExacteZahl(..)
+  , Form(..)
+  , NullStellen(..)
+) where
+  
 import qualified ExactRoot as ER (berechneExacteWurzel, Res ( .. ))
 import qualified Data.Maybe as DM
 import qualified Data.Ratio as DR
-import Data.Ratio (Ratio)
 
 {--
 ax² + bx + c = 0
@@ -61,8 +68,6 @@ data NullStellen = NS {
 
 berechne :: Form -> Ergebnis
 berechne form = undefined
-
-
 
 berechneDiskriminante_ :: Form -> ErgebnisDiskriminante
 berechneDiskriminante_ f = ED diskriminante nullstellen
