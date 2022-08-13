@@ -1,15 +1,21 @@
 module QuadEquation (
   berechneZweiNullStellen
   , berechneEineNullStelle
-  , berechneDiskriminante
+  , ermittleDiskriminante
+  , berechneWurzelVonDiskriment
+  , berechne 
   , ExacteZahl(..)
   , Form(..)
   , NullStellen(..)
+  , ErgebnisDiskriminante (..)
+  , AnzahlNullStellen (..)
+  , Ergebnis (..)
 ) where
-  
+
 import qualified ExactRoot as ER (berechneExacteWurzel, Res ( .. ))
 import qualified Data.Maybe as DM
 import qualified Data.Ratio as DR
+import ExactRoot (Res(multiplikator))
 
 {--
 ax² + bx + c = 0
@@ -31,7 +37,8 @@ Devidend
 Devisor
 
 --}
-
+-- berecheDiskriminante gibt Anzahl der Nullstellen zureuck
+data AnzahlNullStellen =  Keine | Eine | Zwei | Ungueltig deriving (Show, Eq)
 
 data Form = F {
   f_a :: Int,
@@ -40,14 +47,26 @@ data Form = F {
 }
 
 data Ergebnis = E {
-  e_radikand :: Int,
-  e_multiplikator :: Int
-}
+  e_x1 :: ErgebnisX1,
+  e_x2 :: ErgebnisX2
+} deriving (Eq, Show)
+
+data ErgebnisX1 = EX1 {
+  ex1_radikand :: Maybe Int,
+  ex1_wurzelwert :: Maybe Rational,
+  ex1_miltiplikator :: Maybe Int
+} deriving (Eq, Show)
+
+data ErgebnisX2 = EX2 {
+  ex2_radikand :: Maybe Int,
+  ex2_wurzelwert :: Maybe Rational,
+  ex2_miltiplikator :: Maybe Int
+} deriving (Eq, Show)
 
 data ErgebnisDiskriminante = ED {
-  ed_diskriminante :: Deskriminante,
-  ed_anzahlNullstellen :: Int
-}
+  ed_diskriminante :: Int,
+  ed_anzahlNullstellen :: AnzahlNullStellen
+} deriving (Show, Eq)
 
 data Deskriminante = D {
   d_wurzelWert :: Int,
@@ -67,28 +86,27 @@ data NullStellen = NS {
 } deriving (Eq, Show)
 
 berechne :: Form -> Ergebnis
-berechne form = undefined
+berechne form = case ermittleDiskriminante form of
+    ED d Eine -> berechneEineNullStelle form
+    ED d Keine -> undefined
+    ED d Zwei -> berechneZweiNullStellen form (berechneWurzelVonDiskriment d)
+    ED d Ungueltig -> undefined
 
-berechneDiskriminante_ :: Form -> ErgebnisDiskriminante
-berechneDiskriminante_ f = ED diskriminante nullstellen
-  where diskriminante :: Deskriminante
-        diskriminante = undefined
-        nullstellen :: Int
-        nullstellen = undefined
 
-pruefeDiskrimente :: Int -> Int
-pruefeDiskrimente d
-  | d < 0 = -1
-  | d > 0 = 0
-  | otherwise = 1
 
-berechneDiskriminante :: Form -> Int
-berechneDiskriminante f = berechneRadikand
-  where berechneRadikand :: Int
-        berechneRadikand = (b * b) - (4 * a * c)
-          where b = f_b f
-                a = f_a f
-                c = f_c f
+ermittleDiskriminante :: Form -> ErgebnisDiskriminante
+ermittleDiskriminante f = pruefeDiskriminate berechneDiskriminante
+  where b = f_b f
+        a = f_a f
+        c = f_c f
+        berechneDiskriminante :: Int
+        berechneDiskriminante = (b * b) - (4 * a * c)
+        pruefeDiskriminate :: Int -> ErgebnisDiskriminante
+        pruefeDiskriminate d 
+          | d == 0 = ED d Eine
+          | d <  0 = ED d Keine
+          | d >  0 = ED d Zwei
+          | otherwise = ED d Ungueltig
 
 berechneWurzelVonDiskriment :: Int -> ER.Res
 berechneWurzelVonDiskriment = ER.berechneExacteWurzel
@@ -100,26 +118,24 @@ Wenn radikand > 0 (Just) rechne mit multiplikator und schleppe radikand mit
 Test
 berechneZweiNullStellen (F 1 2 3) (EZ (Just (-1)) (Just 2) (Just (-1)))
 -}
-berechneZweiNullStellen :: Form -> ExacteZahl -> NullStellen
+berechneZweiNullStellen :: Form -> ER.Res-> Ergebnis
 berechneZweiNullStellen f d
-  | dMult == (-1) && dRadikand == (-1) = do -- Einfache Wurzelberechnung rechne mit dWurzelwert
-    let devidend = berechneDevidendMitWurzelwertPositiv b dWurzelWert
-    let devisor = berechneDevisorMitWurzelwert a
-    if checkIfDevisionSuccessful devidend devisor
-      then NS (Just (EZ (Just devidend) (Just (devidend `quot` devisor)) (Just devisor))) Nothing
-      else NS Nothing Nothing
+  | dMult == (-1) && dWurzelWert >= 1 && dRadikand == (-1)= do -- Einfache Wurzelberechnung rechne mit dWurzelwert
+    let x1 = toInteger ((-1) * b + dWurzelWert) DR.% toInteger (2 * a)
+    let x2 = ((-1) * b - dWurzelWert) DR.% (2 * a)
+    E 1 x1
   | dRadikand == (-1) = undefined-- rechne mit Multiplikator und Wurzelwert mitschleppen
   | dMult == (-1) && dWurzelWert == (-1) = undefined-- rechne mit Multiplikator == 1 und schleppe radikand mit  (-1) * b + dMult
   | otherwise = undefined
   where a = f_a f
         b = f_b f
         c = f_c f
-        dMult = DM.fromMaybe undefined (ez_multiplikator d)
-        dRadikand = DM.fromMaybe undefined (ez_radikand d)
-        dWurzelWert = DM.fromMaybe undefined (ez_wurzelwert d)
+        dMult = ER.multiplikator d
+        dRadikand = ER.radikand d
+        dWurzelWert = ER.wurzelwert d
 
-berechneEineNullStelle :: Form -> Rational
-berechneEineNullStelle f = toInteger ((-1) * b) DR.% toInteger (2 * a)
+berechneEineNullStelle :: Form -> Ergebnis
+berechneEineNullStelle f = E 1 (toInteger ((-1) * b) DR.% toInteger (2 * a))
   where a = f_a f
         b = f_b f
         c = f_c f
