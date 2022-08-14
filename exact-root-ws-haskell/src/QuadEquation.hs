@@ -3,13 +3,13 @@ module QuadEquation (
   , berechneEineNullStelle
   , ermittleDiskriminante
   , berechneWurzelVonDiskriment
-  , berechne 
-  , ExacteZahl(..)
+  , berechne
   , Form(..)
-  , NullStellen(..)
   , ErgebnisDiskriminante (..)
   , AnzahlNullStellen (..)
   , Ergebnis (..)
+  , ErgebnisX1 (..)
+  , ErgebnisX2 (..)
 ) where
 
 import qualified ExactRoot as ER (berechneExacteWurzel, Res ( .. ))
@@ -53,14 +53,18 @@ data Ergebnis = E {
 
 data ErgebnisX1 = EX1 {
   ex1_radikand :: Maybe Int,
-  ex1_wurzelwert :: Maybe Rational,
-  ex1_miltiplikator :: Maybe Int
+  ex1_miltiplikator :: Maybe Rational,
+  ex1_b :: Maybe Int,
+  ex1_DSqrt :: Maybe Int,
+  ex1_a :: Maybe Int
 } deriving (Eq, Show)
 
 data ErgebnisX2 = EX2 {
   ex2_radikand :: Maybe Int,
-  ex2_wurzelwert :: Maybe Rational,
-  ex2_miltiplikator :: Maybe Int
+  ex2_miltiplikator :: Maybe Rational,
+  ex2_b :: Maybe Int,
+  ex2_DSqrt :: Maybe Int,
+  ex2_a :: Maybe Int
 } deriving (Eq, Show)
 
 data ErgebnisDiskriminante = ED {
@@ -73,26 +77,12 @@ data Deskriminante = D {
   d_multiplikator :: Int
 }
 
-data ExacteZahl = EZ {
-  ez_multiplikator :: Maybe Int, -- immer 1 wenn radikand 
-  ez_wurzelwert :: Maybe Int,
-  ez_radikand :: Maybe Int
-} deriving (Eq, Show)
-
--- neue Data fuer Nullstellen, vorerst in zns_x1 Wurzelwert.
-data NullStellen = NS {
-  zns_x1 :: Maybe ExacteZahl,
-  zns_x2 :: Maybe ExacteZahl
-} deriving (Eq, Show)
-
 berechne :: Form -> Ergebnis
 berechne form = case ermittleDiskriminante form of
     ED d Eine -> berechneEineNullStelle form
     ED d Keine -> undefined
     ED d Zwei -> berechneZweiNullStellen form (berechneWurzelVonDiskriment d)
     ED d Ungueltig -> undefined
-
-
 
 ermittleDiskriminante :: Form -> ErgebnisDiskriminante
 ermittleDiskriminante f = pruefeDiskriminate berechneDiskriminante
@@ -102,7 +92,7 @@ ermittleDiskriminante f = pruefeDiskriminate berechneDiskriminante
         berechneDiskriminante :: Int
         berechneDiskriminante = (b * b) - (4 * a * c)
         pruefeDiskriminate :: Int -> ErgebnisDiskriminante
-        pruefeDiskriminate d 
+        pruefeDiskriminate d
           | d == 0 = ED d Eine
           | d <  0 = ED d Keine
           | d >  0 = ED d Zwei
@@ -114,18 +104,41 @@ berechneWurzelVonDiskriment = ER.berechneExacteWurzel
 {- 
 Wenn wurzelwert > 0 (Just) rechne mit wurzelwert
 Wenn radikand > 0 (Just) rechne mit multiplikator und schleppe radikand mit
-
-Test
-berechneZweiNullStellen (F 1 2 3) (EZ (Just (-1)) (Just 2) (Just (-1)))
 -}
 berechneZweiNullStellen :: Form -> ER.Res-> Ergebnis
 berechneZweiNullStellen f d
-  | dMult == (-1) && dWurzelWert >= 1 && dRadikand == (-1)= do -- Einfache Wurzelberechnung rechne mit dWurzelwert
+  | dMult == (-1) && dWurzelWert >= 1 && dRadikand == (-1) = do -- Einfache Wurzelberechnung rechne mit dWurzelwert
     let x1 = toInteger ((-1) * b + dWurzelWert) DR.% toInteger (2 * a)
-    let x2 = ((-1) * b - dWurzelWert) DR.% (2 * a)
-    E 1 x1
-  | dRadikand == (-1) = undefined-- rechne mit Multiplikator und Wurzelwert mitschleppen
-  | dMult == (-1) && dWurzelWert == (-1) = undefined-- rechne mit Multiplikator == 1 und schleppe radikand mit  (-1) * b + dMult
+    let x2 = toInteger ((-1) * b - dWurzelWert) DR.% toInteger (2 * a)
+    E (
+        EX1 Nothing (Just x1) Nothing Nothing Nothing
+      ) 
+      (
+        EX2 Nothing (Just x2) Nothing Nothing Nothing
+      )
+  | dMult >= 1 && dWurzelWert >= 1 && dRadikand == (-1) = do -- rechne mit Multiplikator und Wurzelwert mitschleppen
+    let x1b = Just ((-1) * b)
+    let x1a = Just (2 * a)
+    let x2b = Just ((-1) * b)
+    let x2a = Just (2 * a)
+    E (
+        EX1 Nothing (Just(toInteger dMult DR.% 1)) x1b (Just dWurzelWert) x1a
+      ) 
+      (
+        EX2 Nothing (Just(toInteger dMult DR.% 1)) x2b (Just dWurzelWert) x2a
+      )
+    
+  | dMult == (-1) && dWurzelWert == (-1) && dRadikand >= 1 = do -- rechne mit Multiplikator = 1 und Radikand mitschleppen
+    let x1b = Just ((-1) * b)
+    let x1a = Just (2 * a)
+    let x2b = Just ((-1) * b)
+    let x2a = Just (2 * a)
+    E (
+        EX1 Nothing Nothing x1b (Just dRadikand) x1a
+      ) 
+      (
+        EX2 Nothing Nothing x2b (Just dRadikand) x2a
+      )
   | otherwise = undefined
   where a = f_a f
         b = f_b f
@@ -135,7 +148,14 @@ berechneZweiNullStellen f d
         dWurzelWert = ER.wurzelwert d
 
 berechneEineNullStelle :: Form -> Ergebnis
-berechneEineNullStelle f = E 1 (toInteger ((-1) * b) DR.% toInteger (2 * a))
+berechneEineNullStelle f = do
+  let x = toInteger ((-1) * b) DR.% toInteger (2 * a)
+  E (
+      EX1 Nothing (Just x) Nothing Nothing Nothing
+    ) 
+    (
+      EX2 Nothing Nothing Nothing Nothing Nothing
+    )
   where a = f_a f
         b = f_b f
         c = f_c f
@@ -153,7 +173,3 @@ checkIfDevisionSuccessful :: Int -> Int -> Bool
 checkIfDevisionSuccessful devidend devisor
   | (devidend `mod` devisor) == 0 = True
   | otherwise = False
-
-testBerechneZweiNullStellenEinfacheWurzelberechnung :: IO ()
-testBerechneZweiNullStellenEinfacheWurzelberechnung =
-  print $ berechneZweiNullStellen (F 1 2 3) (EZ (Just (-1)) (Just 2) (Just (-1)))

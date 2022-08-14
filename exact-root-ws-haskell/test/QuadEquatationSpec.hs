@@ -4,6 +4,8 @@ import Test.Hspec
 import QuadEquation
 import ExactRoot (Res (..))
 import qualified Data.Ratio as DR
+import Data.Maybe (Maybe(Nothing))
+import Data.Char (GeneralCategory(NotAssigned))
 
 spec :: Spec
 spec = do
@@ -33,8 +35,13 @@ spec = do
       berechneWurzelVonDiskriment 12 `shouldBe` Res 2 3 (-1)
     it "D = 16" $ do
       berechneWurzelVonDiskriment 16 `shouldBe` Res (-1) 4 (-1) 
-  describe "Berechen eine Nullstelle D = 0" $ do
+    it "D = 3" $ do
+      berechneWurzelVonDiskriment 3 `shouldBe` Res (-1) (-1) 3 
+  describe "Berechen eine Nullstelle" $ do
     it "x² + 2x + 1, x1 = -1 D = 0" $ do
-      berechne (F 1 2 1) `shouldBe` E 1 ((-1) DR.% 1)
+      berechne (F 1 2 1) `shouldBe` E (EX1 Nothing (Just ((-1) DR.% 1)) Nothing Nothing Nothing) (EX2 Nothing Nothing Nothing Nothing Nothing)
+  describe "Berechen zwei Nullstelle" $ do
+    it "x² + 2x - 3, x1 = 1 x2 = -3 D = 4" $ do
+      berechne (F 1 2 (-3)) `shouldBe` E (EX1 Nothing (Just (1 DR.% 1)) Nothing Nothing Nothing) (EX2 Nothing (Just ((-3) DR.% 1)) Nothing Nothing Nothing)
 
     
