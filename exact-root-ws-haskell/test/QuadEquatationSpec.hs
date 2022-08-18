@@ -5,7 +5,7 @@ import QuadEquation
 import ExactRoot (Res (..))
 import qualified Data.Ratio as DR
 import Data.Maybe (Maybe(Nothing))
-import Data.Char (GeneralCategory(NotAssigned))
+import QuadEquation (showErgebnis)
 
 spec :: Spec
 spec = do
@@ -43,5 +43,13 @@ spec = do
   describe "Berechen zwei Nullstelle" $ do
     it "x² + 2x - 3, x1 = 1 x2 = -3 D = 4" $ do
       berechne (F 1 2 (-3)) `shouldBe` E (EX1 Nothing (Just (1 DR.% 1)) Nothing Nothing Nothing) (EX2 Nothing (Just ((-3) DR.% 1)) Nothing Nothing Nothing)
+    it "x² + 3x - 3, x1 = (-3 + sqrt(21))/2 x2 = (-3 - sqrt(21))/2  D = sqrt(21)" $ do
+      berechne (F 1 3 (-3)) `shouldBe` E (EX1 Nothing Nothing (Just (-3)) (Just 21) (Just 2)) (EX2 Nothing Nothing (Just (-3)) (Just 21) (Just 2))
+    it "x² + 10x + 5, x1 = (-10 + 2 * sqrt(20))/2 x2 = (-10 - 2 * sqrt(20))/2  D = sqrt(21)" $ do
+      berechne (F 1 10 5) `shouldBe` E (EX1 Nothing (Just (2 DR.% 1)) (Just (-10)) (Just 20) (Just 2)) (EX2 Nothing (Just (2 DR.% 1)) (Just (-10)) (Just 20) (Just 2))
+  describe "IO Ausgabe für eine Nullstelle" $ do
+    it "" $ do
+      showErgebnis (berechne (F 1 2 1)) `shouldBe` ""
+
 
     

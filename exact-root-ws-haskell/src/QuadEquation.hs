@@ -45,12 +45,13 @@ data Form = F {
   f_b :: Int,
   f_c :: Int
 }
-
+-- Splitten auf ErgebnisEineNullstelle und ErgebnissZweiNullstellen
 data Ergebnis = E {
   e_x1 :: ErgebnisX1,
   e_x2 :: ErgebnisX2
 } deriving (Eq, Show)
 
+-- Alle Int to Rational ersetzen
 data ErgebnisX1 = EX1 {
   ex1_radikand :: Maybe Int,
   ex1_miltiplikator :: Maybe Rational,
@@ -71,11 +72,6 @@ data ErgebnisDiskriminante = ED {
   ed_diskriminante :: Int,
   ed_anzahlNullstellen :: AnzahlNullStellen
 } deriving (Show, Eq)
-
-data Deskriminante = D {
-  d_wurzelWert :: Int,
-  d_multiplikator :: Int
-}
 
 berechne :: Form -> Ergebnis
 berechne form = case ermittleDiskriminante form of
@@ -159,17 +155,3 @@ berechneEineNullStelle f = do
   where a = f_a f
         b = f_b f
         c = f_c f
-
-berechneDevidendMitWurzelwertPositiv :: Int -> Int -> Int
-berechneDevidendMitWurzelwertPositiv b wurzelwert = (-1) * b + wurzelwert
-
-berechneDevidendMitWurzelwertNegativ :: Int -> Int -> Int
-berechneDevidendMitWurzelwertNegativ b wurzelwert = (-1) * b - wurzelwert
-
-berechneDevisorMitWurzelwert :: Int -> Int
-berechneDevisorMitWurzelwert a = 2 * a
-
-checkIfDevisionSuccessful :: Int -> Int -> Bool
-checkIfDevisionSuccessful devidend devisor
-  | (devidend `mod` devisor) == 0 = True
-  | otherwise = False
